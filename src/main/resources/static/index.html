@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced PDF Editor - Upload, view, edit, merge, split, and convert PDF documents online">
+    <title>PDF Editor Pro — Advanced Document Processing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.mjs" type="module"></script>
+</head>
+<body>
+    <!-- ====== HEADER ====== -->
+    <header id="app-header">
+        <div class="header-left">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+                    <rect x="2" y="2" width="28" height="28" rx="6" fill="url(#grad1)"/>
+                    <path d="M10 8h8a4 4 0 010 8h-8V8z" fill="rgba(255,255,255,0.9)"/>
+                    <path d="M10 16h6a4 4 0 010 8h-6V16z" fill="rgba(255,255,255,0.6)"/>
+                    <defs>
+                        <linearGradient id="grad1" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#6366f1"/>
+                            <stop offset="1" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">PDF Editor <span class="logo-pro">Pro</span></span>
+            </div>
+        </div>
+        <nav class="header-nav" id="main-nav">
+            <button class="nav-btn active" data-tab="viewer" id="nav-viewer">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/></svg>
+                Viewer
+            </button>
+            <button class="nav-btn" data-tab="edit" id="nav-edit">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                Edit
+            </button>
+            <button class="nav-btn" data-tab="tools" id="nav-tools">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+                Tools
+            </button>
+            <button class="nav-btn" data-tab="convert" id="nav-convert">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+                Convert
+            </button>
+        </nav>
+        <div class="header-right">
+            <button class="icon-btn" id="btn-api-docs" title="API Documentation" onclick="window.open('/swagger-ui.html','_blank')">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- ====== MAIN LAYOUT ====== -->
+    <div id="app-layout">
+        <!-- ====== SIDEBAR ====== -->
+        <aside id="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/></svg>
+                    Files
+                </h3>
+                <div id="upload-zone" class="upload-zone">
+                    <input type="file" id="file-input" accept=".pdf" multiple hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L14 16h7v12h6V16h7L24 4z" fill="currentColor" opacity="0.6"/>
+                            <path d="M8 34v6a4 4 0 004 4h24a4 4 0 004-4v-6" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+                        </svg>
+                        <p class="upload-text">Drop PDF files here</p>
+                        <p class="upload-hint">or click to browse</p>
+                    </div>
+                </div>
+                <div id="file-list" class="file-list"></div>
+            </div>
+
+            <!-- Page Thumbnails (shown when viewing) -->
+            <div class="sidebar-section" id="thumbnails-section" style="display:none">
+                <h3 class="sidebar-title">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z"/></svg>
+                    Pages
+                </h3>
+                <div id="page-thumbnails" class="page-thumbnails"></div>
+            </div>
+        </aside>
+
+        <!-- ====== MAIN CONTENT ====== -->
+        <main id="main-content">
+            <!-- Welcome Screen -->
+            <div id="welcome-screen" class="welcome-screen">
+                <div class="welcome-inner">
+                    <div class="welcome-icon-wrap">
+                        <svg class="welcome-icon" viewBox="0 0 80 80" fill="none">
+                            <rect x="10" y="6" width="48" height="64" rx="4" stroke="url(#wg)" stroke-width="3" fill="none"/>
+                            <path d="M20 24h28M20 32h28M20 40h20M20 48h24" stroke="url(#wg)" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="58" cy="58" r="18" fill="url(#wg2)" opacity="0.9"/>
+                            <path d="M52 58h12M58 52v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="wg" x1="10" y1="6" x2="58" y2="70">
+                                    <stop stop-color="#818cf8"/><stop offset="1" stop-color="#a78bfa"/>
+                                </linearGradient>
+                                <linearGradient id="wg2" x1="40" y1="40" x2="76" y2="76">
+                                    <stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h1 class="welcome-title">Welcome to PDF Editor Pro</h1>
+                    <p class="welcome-desc">Upload a PDF document to get started with viewing, editing, merging, splitting, and converting.</p>
+                    <button class="btn btn-primary btn-lg" id="btn-upload-welcome">
+                        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                        Upload PDF
+                    </button>
+                    <div class="feature-cards">
+                        <div class="feature-card">
+                            <div class="feature-icon">📄</div>
+                            <h4>View & Navigate</h4>
+                            <p>Zoom, scroll, and navigate through pages</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✂️</div>
+                            <h4>Split & Merge</h4>
+                            <p>Combine or separate PDF documents</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✏️</div>
+                            <h4>Edit Content</h4>
+                            <p>Insert text and images at any position</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔄</div>
+                            <h4>Convert Formats</h4>
+                            <p>Export to DOCX and PPTX formats</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Viewer Tab -->
+            <div id="tab-viewer" class="tab-content" style="display:none">
+                <div class="viewer-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="btn-prev-page" title="Previous Page">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        </button>
+                        <span class="page-info">
+                            <input type="number" id="input-page-number" min="1" value="1" class="page-input">
+                            <span>/ <span id="total-pages">0</span></span>
+                        </span>
+                        <button class="toolbar-btn" id="btn-next-page" title="Next Page">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="btn-zoom-out" title="Zoom Out">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M5 8a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                        </button>
+                        <span class="zoom-level" id="zoom-level">100%</span>
+                        <button class="toolbar-btn" id="btn-zoom-in" title="Zoom In">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M8 5a1 1 0 011 1v1h1a1 1 0 110 2H9v1a1 1 0 11-2 0V9H6a1 1 0 010-2h1V6a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                        </button>
+                        <button class="toolbar-btn" id="btn-zoom-fit" title="Fit to Width">Fit</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" id="btn-download" title="Download PDF">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            Download
+                        </button>
+                        <button class="toolbar-btn" id="btn-extract-text" title="Extract Text">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                            Extract Text
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <div class="search-bar">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+                            <input type="text" id="search-input" placeholder="Search in PDF..." class="search-field">
+                            <button class="search-btn" id="btn-search">Go</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="viewer-container" id="viewer-container">
+                    <canvas id="pdf-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Edit Tab -->
+            <div id="tab-edit" class="tab-content" style="display:none">
+                <div class="panel-grid">
+                    <div class="panel">
+                        <h3 class="panel-title">Insert Text</h3>
+                        <div class="form-group">
+                            <label>Text Content</label>
+                            <textarea id="edit-text-content" rows="3" placeholder="Enter text to insert..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Page</label>
+                                <input type="number" id="edit-text-page" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>X Position</label>
+                                <input type="number" id="edit-text-x" value="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Y Position</label>
+                                <input type="number" id="edit-text-y" value="700">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Font Size</label>
+                                <input type="number" id="edit-text-size" value="12" min="6" max="96">
+                            </div>
+                            <div class="form-group">
+                                <label>Font</label>
+                                <select id="edit-text-font">
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Helvetica-Bold">Helvetica Bold</option>
+                                    <option value="Courier">Courier</option>
+                                    <option value="Times-Roman">Times Roman</option>
+                                    <option value="Times-Bold">Times Bold</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Color</label>
+                                <input type="color" id="edit-text-color" value="#000000">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btn-insert-text">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                            Insert Text
+                        </button>
+                    </div>
+
+                    <div class="panel">
+                        <h3 class="panel-title">Insert Image</h3>
+                        <div class="form-group">
+                            <label>Image File</label>
+                            <input type="file" id="edit-image-file" accept="image/*" class="file-input-styled">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Page</label>
+                                <input type="number" id="edit-image-page" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>X</label>
+                                <input type="number" id="edit-image-x" value="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Y</label>
+                                <input type="number" id="edit-image-y" value="500">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Width</label>
+                                <input type="number" id="edit-image-width" value="200">
+                            </div>
+                            <div class="form-group">
+                                <label>Height</label>
+                                <input type="number" id="edit-image-height" value="200">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btn-insert-image">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                            Insert Image
+                        </button>
+                    </div>
+
+                    <div class="panel">
+                        <h3 class="panel-title">Page Operations</h3>
+                        <div class="form-group">
+                            <label>Delete Pages (comma-separated, 0-indexed)</label>
+                            <input type="text" id="edit-delete-pages" placeholder="e.g., 0, 2, 4">
+                        </div>
+                        <button class="btn btn-danger" id="btn-delete-pages">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9z" clip-rule="evenodd"/></svg>
+                            Delete Pages
+                        </button>
+
+                        <hr class="divider">
+
+                        <div class="form-group">
+                            <label>Add Blank Page After (page index, -1 for beginning)</label>
+                            <input type="number" id="edit-add-page-after" value="-1" min="-1">
+                        </div>
+                        <button class="btn btn-secondary" id="btn-add-blank-page">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/></svg>
+                            Add Blank Page
+                        </button>
+
+                        <hr class="divider">
+
+                        <div class="form-group">
+                            <label>Reorder Pages (comma-separated new order, 0-indexed)</label>
+                            <input type="text" id="edit-reorder-pages" placeholder="e.g., 2, 0, 1, 3">
+                        </div>
+                        <button class="btn btn-secondary" id="btn-reorder-pages">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/></svg>
+                            Reorder Pages
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="tab-tools" class="tab-content" style="display:none">
+                <div class="panel-grid">
+                    <div class="panel">
+                        <h3 class="panel-title">Merge PDFs</h3>
+                        <p class="panel-desc">Select multiple files from the sidebar, then merge them into a single document.</p>
+                        <div class="form-group">
+                            <label>Output Filename</label>
+                            <input type="text" id="merge-output-name" value="merged.pdf" placeholder="merged.pdf">
+                        </div>
+                        <div id="merge-file-list" class="merge-file-list"></div>
+                        <button class="btn btn-primary" id="btn-merge">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z"/></svg>
+                            Merge Selected Files
+                        </button>
+                    </div>
+
+                    <div class="panel">
+                        <h3 class="panel-title">Split PDF</h3>
+                        <p class="panel-desc">Split the current PDF by page ranges or into individual pages.</p>
+                        <div class="form-group">
+                            <label>Page Ranges (e.g., 1-3, 4-6) — leave empty for individual pages</label>
+                            <input type="text" id="split-ranges" placeholder="1-3, 4-6">
+                        </div>
+                        <button class="btn btn-primary" id="btn-split">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 110-2h4a1 1 0 011 1v4a1 1 0 11-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 112 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 110 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 110-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                            Split PDF
+                        </button>
+                    </div>
+
+                    <div class="panel">
+                        <h3 class="panel-title">Document Info</h3>
+                        <div id="metadata-display" class="metadata-display">
+                            <p class="text-muted">Select a file to view its metadata</p>
+                        </div>
+                        <button class="btn btn-secondary" id="btn-refresh-metadata">
+                            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+                            Refresh Metadata
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Convert Tab -->
+            <div id="tab-convert" class="tab-content" style="display:none">
+                <div class="panel-grid">
+                    <div class="panel convert-panel">
+                        <div class="convert-icon">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <rect x="4" y="4" width="40" height="40" rx="8" fill="#2563eb" opacity="0.15"/>
+                                <path d="M16 14h16v4H16v-4zm0 8h12v4H16v-4zm0 8h14v4H16v-4z" fill="#2563eb"/>
+                            </svg>
+                        </div>
+                        <h3 class="panel-title">Convert to Word (DOCX)</h3>
+                        <p class="panel-desc">Extract text from your PDF and create a Word document with page-by-page content.</p>
+                        <button class="btn btn-primary btn-lg" id="btn-convert-docx">
+                            Convert to DOCX
+                        </button>
+                    </div>
+
+                    <div class="panel convert-panel">
+                        <div class="convert-icon">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <rect x="4" y="4" width="40" height="40" rx="8" fill="#ea580c" opacity="0.15"/>
+                                <rect x="12" y="12" width="24" height="16" rx="2" fill="#ea580c"/>
+                                <rect x="16" y="32" width="16" height="4" rx="1" fill="#ea580c" opacity="0.5"/>
+                            </svg>
+                        </div>
+                        <h3 class="panel-title">Convert to PowerPoint (PPTX)</h3>
+                        <p class="panel-desc">Create a presentation with one slide per page, perfect for sharing content.</p>
+                        <button class="btn btn-primary btn-lg" id="btn-convert-pptx">
+                            Convert to PPTX
+                        </button>
+                    </div>
+
+                    <div class="panel convert-panel">
+                        <div class="convert-icon">
+                            <svg viewBox="0 0 48 48" fill="none">
+                                <rect x="4" y="4" width="40" height="40" rx="8" fill="#7c3aed" opacity="0.15"/>
+                                <path d="M14 12h20l-6 24H14l6-24z" fill="#7c3aed" opacity="0.4"/>
+                                <path d="M18 16h16l-4 16H18l4-16z" fill="#7c3aed"/>
+                            </svg>
+                        </div>
+                        <h3 class="panel-title">Batch Convert</h3>
+                        <p class="panel-desc">Convert multiple PDFs at once. Results are bundled as a ZIP download.</p>
+                        <div class="form-group">
+                            <label>Target Format</label>
+                            <select id="batch-format">
+                                <option value="docx">Word (DOCX)</option>
+                                <option value="pptx">PowerPoint (PPTX)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-lg" id="btn-batch-convert">
+                            Batch Convert All Files
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ====== TOAST NOTIFICATIONS ====== -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ====== TEXT EXTRACTION MODAL ====== -->
+    <div id="modal-overlay" class="modal-overlay" style="display:none">
+        <div class="modal" id="text-modal">
+            <div class="modal-header">
+                <h3>Extracted Text</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="extracted-text" readonly rows="20" class="extracted-text-area"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-copy-text">Copy to Clipboard</button>
+                <button class="btn btn-primary" id="btn-close-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== SEARCH RESULTS MODAL ====== -->
+    <div id="search-modal-overlay" class="modal-overlay" style="display:none">
+        <div class="modal" id="search-modal">
+            <div class="modal-header">
+                <h3>Search Results</h3>
+                <button class="modal-close" id="search-modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="search-results-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-close-search-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== LOADING OVERLAY ====== -->
+    <div id="loading-overlay" class="loading-overlay" style="display:none">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loading-message">Processing...</p>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/fileManager.js"></script>
+    <script src="js/pdfViewer.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/converter.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
